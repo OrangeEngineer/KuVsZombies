@@ -1,4 +1,5 @@
 package kuzombies;
+import org.newdawn.slick.Animation;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
@@ -6,40 +7,49 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.Image;
+
+
 
 public class KuZombies extends BasicGame {
-
+	private Zombies[] zombies;
 	public KuZombies(String title) {
 		super (title);
 	}
 
-	@Override
-	public void render(GameContainer arg0, Graphics arg1) throws SlickException {
-		// TODO Auto-generated method stub
-		
+	public void init(GameContainer gc) throws SlickException {
+		initZombies();
+	}
+	public void initZombies() throws SlickException{
+		zombies = new Zombies[4];
+	    for (int i = 0; i < 4; i++) {
+	      zombies[i] = new Zombies(30, 100);
+	    }
+	}
+	
+	public void render(GameContainer gc, Graphics g) throws SlickException {
+		for (Zombies zombie : zombies) {
+		      zombie.render(gc, g);
+		}
 	}
 
-	@Override
-	public void init(GameContainer arg0) throws SlickException {
-		// TODO Auto-generated method stub
-		
+	public void update(GameContainer gc, int delta) throws SlickException {
+		for (Zombies zombie : zombies) {
+		      zombie.update(delta);
+		}
 	}
+	
 
-	@Override
-	public void update(GameContainer arg0, int arg1) throws SlickException {
-		// TODO Auto-generated method stub
-		
-	}
 	public static void main(String[] args) {
 		try {
-			KuZombies game = new KuZombies("KU VS ZOBIES");
-			AppGameContainer container = new AppGameContainer(game);
-			container.setDisplayMode(800, 600, false);
-		    container.setMinimumLogicUpdateInterval(1000 / 60);
-			container.start();
+			KuZombies game = new KuZombies("Super Ship Game");
+			AppGameContainer appgc = new AppGameContainer(game);
+			appgc.setDisplayMode(800, 600,false);
+			appgc.start();
 		}catch (SlickException e) {
 			e.printStackTrace();
 		}
-
 	}
+
+
 }
