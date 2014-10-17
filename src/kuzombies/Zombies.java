@@ -1,5 +1,7 @@
 package kuzombies;
 
+import java.util.Random;
+
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -11,6 +13,7 @@ public class Zombies {
 	private Image z;
 	private float x;
 	private float y;
+	private float vx;
 	
 	public Animation getAnimation ( Image i , int spritesX, int spritesY , int spriteWidth , int spriteHeight, int frames, int duration )
 	{
@@ -30,21 +33,23 @@ public class Zombies {
 	}
 
 	public Zombies (float x,float y) throws SlickException {
-		this.x = x;
-	    this.y = y;
+		this.x = x ;
+	    this.y = y - 250;
 		Image z = new Image("res/animation.png");
-		animationZ = getAnimation ( z, 9 , 9 , 128, 128, 30, 100 );
+		animationZ = getAnimation ( z, 9 , 3 , 128, 128, 30, 100 );
 		
 
 	}
 	
 	public void render(GameContainer gc, Graphics g) throws SlickException {
-		animationZ.draw(350, 0);
+		animationZ.draw(this.x,this.y);
 		
 	}
 
 	public void update(int delta) throws SlickException {
+		this.y += 0.3;
+		animationZ.draw(this.x,this.y);
 		animationZ.update(delta);
-		this.y = 300;
-	}
+		  }
+		  
 }
