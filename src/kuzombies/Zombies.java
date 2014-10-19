@@ -33,8 +33,8 @@ public class Zombies {
 	}
 
 	public Zombies (float x,float y) throws SlickException {
-		this.x = x ;
-	    this.y = y - 250;
+		this.x = x;
+	    this.y = y;
 		Image z = new Image("res/animation.png");
 		animationZ = getAnimation ( z, 9 , 3 , 128, 128, 30, 100 );
 		
@@ -47,9 +47,11 @@ public class Zombies {
 	}
 
 	public void update(int delta) throws SlickException {
-		this.y += 0.3;
+		this.y += 0.1;
 		animationZ.draw(this.x,this.y);
 		animationZ.update(delta);
 		  }
 		  
 }
+
+

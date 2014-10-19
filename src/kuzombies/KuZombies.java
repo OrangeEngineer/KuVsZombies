@@ -15,19 +15,31 @@ import org.newdawn.slick.Image;
 
 public class KuZombies extends BasicGame {
 	private Zombies[] zombies;
+	private Ku ku;
 	private float x;
 	public KuZombies(String title) {
 		super (title);
 	}
 
+
+	public static void main(String[] args) throws SlickException {
+		
+		KuZombies game = new KuZombies("KU vs Zombie");
+		AppGameContainer appgc = new AppGameContainer(game);
+		appgc.setDisplayMode(800, 600,false);
+		appgc.setTargetFrameRate(60);
+		appgc.start();
+	}
+
 	public void init(GameContainer gc) throws SlickException {
 		initZombies();
+		ku =new Ku(300,200);
 	}
 	public void initZombies() throws SlickException{
 		zombies = new Zombies[4];
 		randomX();
 	    for (int i = 0; i < 4; i++) {
-	      zombies[i] = new Zombies(x, 100);
+	      zombies[i] = new Zombies(x*i+20, -100);
 	    }
 	}
 	
@@ -35,12 +47,29 @@ public class KuZombies extends BasicGame {
 		for (Zombies zombie : zombies) {
 		      zombie.render(gc, g);
 		}
+		ku.draw();
+	}
+	void updateShipMovement (Input input, int Delta) {
+		if (input.isKeyDown(input.KEY_LEFT)) {
+			ku.moveLeft();
+		}
+		if (input.isKeyDown(input.KEY_RIGHT)) {
+			ku.moveRight();
+		}
+		if (input.isKeyDown(input.KEY_DOWN)) {
+			ku.moveDown();
+		}
+		if (input.isKeyDown(input.KEY_UP)) {
+			ku.moveUp();
+		}
 	}
 
 	public void update(GameContainer gc, int delta) throws SlickException {
 		for (Zombies zombie : zombies) {
 		      zombie.update(delta);
 		}
+		Input input = gc.getInput();
+		updateShipMovement(input,delta);
 	}
 	public void randomX() {
 		  Random random = new Random();
@@ -48,16 +77,7 @@ public class KuZombies extends BasicGame {
 	}
 	  
 
-	public static void main(String[] args) {
-		try {
-			KuZombies game = new KuZombies("KU vs Zombie");
-			AppGameContainer appgc = new AppGameContainer(game);
-			appgc.setDisplayMode(800, 600,false);
-			appgc.start();
-		}catch (SlickException e) {
-			e.printStackTrace();
-		}
-	}
-
 
 }
+
+
