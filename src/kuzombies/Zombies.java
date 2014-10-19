@@ -15,6 +15,14 @@ public class Zombies {
 	private float y;
 	private float angle;
 
+	public float getX() {
+		return this.x;
+	}
+
+	public float getY() {
+		return this.y;
+	}
+
 	public Animation getAnimation(Image i, int spritesX, int spritesY,
 			int spriteWidth, int spriteHeight, int frames, int duration) {
 		Animation a = new Animation(false);
@@ -36,7 +44,7 @@ public class Zombies {
 		this.x = x;
 		this.y = y;
 		randomAngle();
-		Image z = new Image("res/animation.png");
+		z = new Image("res/animation.png");
 		animationZ = getAnimation(z, 9, 3, 128, 128, 30, 100);
 
 	}
@@ -47,7 +55,8 @@ public class Zombies {
 	}
 
 	public void update(int delta) throws SlickException {
-		this.y += 0.3;
+		this.y += 1;
+		z.setRotation(angle);
 		if (this.x > 20 && this.x < 700) {
 			this.x += (0.3) * ((float) Math.cos(angle));
 		} else {

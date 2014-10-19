@@ -17,6 +17,8 @@ public class KuZombies extends BasicGame {
 	private Zombies[] zombies;
 	private Ku ku;
 	private float x;
+	private boolean isGameOver = false;
+	private boolean isDying = false;
 
 	public KuZombies(String title) {
 		super(title);
@@ -45,36 +47,49 @@ public class KuZombies extends BasicGame {
 	}
 
 	public void render(GameContainer gc, Graphics g) throws SlickException {
-		for (Zombies zombie : zombies) {
-			zombie.render(gc, g);
+		if (isDying == false) {
+			for (Zombies zombie : zombies) {
+				zombie.render(gc, g);
+			}
+			ku.draw();
+		} else {
+			ku.dead();
 		}
-		ku.draw();
 	}
 
 	void updateKuMovement(Input input, int Delta) {
-		if (input.isKeyDown(input.KEY_LEFT)) {
+		if (input.isKeyDown(input.KEY_A)) {
 			ku.moveLeft();
 		}
-		if (input.isKeyDown(input.KEY_RIGHT)) {
+		if (input.isKeyDown(input.KEY_D)) {
 			ku.moveRight();
 		}
-		if (input.isKeyDown(input.KEY_DOWN)) {
+		if (input.isKeyDown(input.KEY_S)) {
 			ku.moveDown();
 		}
-		if (input.isKeyDown(input.KEY_UP)) {
+		if (input.isKeyDown(input.KEY_W)) {
 			ku.moveUp();
 		}
 		float positionMouseX = input.getMouseX();
 		float positionMouseY = input.getMouseY();
-		ku.Rotate(positionMouseX ,positionMouseY);
+		ku.Rotate(positionMouseX, positionMouseY);
 	}
 
 	public void update(GameContainer gc, int delta) throws SlickException {
-		for (Zombies zombie : zombies) {
-			zombie.update(delta);
+		if (isGameOver == false) {
+			for (Zombies zombie : zombies) {
+				zombie.update(delta);
+				if (ku.isAttacked(zombie)) {
+					isGameOver = true;
+				}
+			}
+			Input input = gc.getInput();
+			updateKuMovement(input, delta);
+		} else if (isDying == false) {
+			ku.dead();
+			ku.update(delta);
+			isDying = true;
 		}
-		Input input = gc.getInput();
-		updateKuMovement(input, delta);
 	}
 
 	public void randomX() {
