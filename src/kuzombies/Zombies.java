@@ -13,45 +13,53 @@ public class Zombies {
 	private Image z;
 	private float x;
 	private float y;
-	private float vx;
-	
-	public Animation getAnimation ( Image i , int spritesX, int spritesY , int spriteWidth , int spriteHeight, int frames, int duration )
-	{
+	private float angle;
+
+	public Animation getAnimation(Image i, int spritesX, int spritesY,
+			int spriteWidth, int spriteHeight, int frames, int duration) {
 		Animation a = new Animation(false);
-		
+
 		int c = 0;
-		for( int y = 0 ; y < spritesY; y++)
-		{
-			for( int x = 0 ; x < spritesX; x++)
-			{
-				if( c < frames ) a.addFrame( i.getSubImage(x*spriteWidth, y*spriteHeight, spriteWidth, spriteHeight), duration);
+		for (int y = 0; y < spritesY; y++) {
+			for (int x = 0; x < spritesX; x++) {
+				if (c < frames)
+					a.addFrame(i.getSubImage(x * spriteWidth, y * spriteHeight,
+							spriteWidth, spriteHeight), duration);
 				c++;
 			}
 		}
-		
+
 		return a;
 	}
 
-	public Zombies (float x,float y) throws SlickException {
+	public Zombies(float x, float y) throws SlickException {
 		this.x = x;
-	    this.y = y;
+		this.y = y;
+		randomAngle();
 		Image z = new Image("res/animation.png");
-		animationZ = getAnimation ( z, 9 , 3 , 128, 128, 30, 100 );
-		
+		animationZ = getAnimation(z, 9, 3, 128, 128, 30, 100);
 
 	}
-	
+
 	public void render(GameContainer gc, Graphics g) throws SlickException {
-		animationZ.draw(this.x,this.y);
-		
+		animationZ.draw(this.x, this.y);
+
 	}
 
 	public void update(int delta) throws SlickException {
-		this.y += 0.1;
-		animationZ.draw(this.x,this.y);
+		this.y += 0.3;
+		if (this.x > 20 && this.x < 700) {
+			this.x += (0.3) * ((float) Math.cos(angle));
+		} else {
+			angle = 90 - angle;
+			this.x += ((float) Math.cos(angle));
+		}
 		animationZ.update(delta);
-		  }
-		  
+	}
+
+	public void randomAngle() {
+		Random random = new Random();
+		angle = 30 + random.nextInt(120);
+	}
+
 }
-
-

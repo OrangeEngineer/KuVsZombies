@@ -1,5 +1,6 @@
 package kuzombies;
 
+import org.lwjgl.input.Mouse;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -10,36 +11,46 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Animation;
 
 public class Ku {
-	 private Image ku;
-	 private float x;
-	 private float y;
-	 public Ku (float x,float y) throws SlickException {
-		 ku = new Image("res/Player.png");
-		 this.x = x;
-		 this.y = y;
-	 }
-	 public void draw() throws SlickException {
-			ku.draw(this.x,this.y);
-	  }
-	 public void moveLeft() {
-		  if(this.x > 0) {
-		  this.x -= 4; 
-		  }
-	  }
-	  public void moveRight() {
-		  if(this.x < 700) {
-		  this.x += 4;
-		  }
-	  }
-	  public void moveUp() {
-		  if(this.y > 300) {
-		  this.y -= 4;
-		  }
-	  }
-	  public void moveDown() {
-		  if(this.y < 500) {
-		  this.y += 4;
-		  }
-		  
-	  }
+	private Image ku;
+	private float x;
+	private float y;
+
+	public Ku(float x, float y) throws SlickException {
+		ku = new Image("res/Player.png");
+		this.x = x;
+		this.y = y;
+	}
+
+	public void draw() throws SlickException {
+		ku.draw(this.x, this.y);
+	}
+
+	public void moveLeft() {
+		if (this.x > 0) {
+			this.x -= 4;
+		}
+	}
+
+	public void moveRight() {
+		if (this.x < 700) {
+			this.x += 4;
+		}
+	}
+
+	public void moveUp() {
+		if (this.y > 300) {
+			this.y -= 4;
+		}
+	}
+
+	public void moveDown() {
+		if (this.y < 500) {
+			this.y += 4;
+		}
+
+	}
+	public void Rotate(float positionMouseX,float positionMouseY) {
+		double MouseAngle = Math.toDegrees(Math.atan2( positionMouseY-this.y,positionMouseX-this.x));
+		ku.setRotation((float)MouseAngle+90);
+	}
 }
