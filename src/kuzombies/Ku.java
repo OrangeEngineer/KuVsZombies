@@ -16,6 +16,13 @@ public class Ku {
 	private Image dying;
 	private float x;
 	private float y;
+	public float getX() {
+		return this.x;
+	}
+
+	public float getY() {
+		return this.y;
+	}
 
 	public Animation getAnimation(Image i, int spritesX, int spritesY,
 			int spriteWidth, int spriteHeight, int frames, int duration) {

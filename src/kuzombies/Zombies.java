@@ -9,8 +9,8 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
 public class Zombies {
-	private Animation animationZ;
-	private Image z;
+	private Animation animation_Zombie;
+	private Image zombie;
 	private float x;
 	private float y;
 	private float angle;
@@ -44,26 +44,26 @@ public class Zombies {
 		this.x = x;
 		this.y = y;
 		randomAngle();
-		z = new Image("res/animation.png");
-		animationZ = getAnimation(z, 9, 3, 128, 128, 30, 100);
+		zombie = new Image("res/animation.png");
+		animation_Zombie = getAnimation(zombie, 9, 3, 128, 128, 30, 100);
 
 	}
 
 	public void render(GameContainer gc, Graphics g) throws SlickException {
-		animationZ.draw(this.x, this.y);
+		animation_Zombie.draw(this.x, this.y);
 
 	}
 
 	public void update(int delta) throws SlickException {
 		this.y += 1;
-		z.setRotation(angle);
+		zombie.setRotation(angle);
 		if (this.x > 20 && this.x < 700) {
 			this.x += (0.3) * ((float) Math.cos(angle));
 		} else {
 			angle = 90 - angle;
 			this.x += ((float) Math.cos(angle));
 		}
-		animationZ.update(delta);
+		animation_Zombie.update(delta);
 	}
 
 	public void randomAngle() {

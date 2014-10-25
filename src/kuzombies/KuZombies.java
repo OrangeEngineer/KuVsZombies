@@ -1,5 +1,7 @@
 package kuzombies;
 
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Random;
 
 import org.lwjgl.input.Mouse;
@@ -12,9 +14,11 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.geom.Vector2f;
 
 public class KuZombies extends BasicGame {
 	private Zombies[] zombies;
+	private LinkedList<Bullet> bullets;
 	private Ku ku;
 	private float x;
 	private boolean isGameOver = false;
@@ -34,6 +38,7 @@ public class KuZombies extends BasicGame {
 	}
 
 	public void init(GameContainer gc) throws SlickException {
+		bullets = new LinkedList<Bullet>();
 		initZombies();
 		ku = new Ku(400, 500);
 	}
@@ -48,6 +53,9 @@ public class KuZombies extends BasicGame {
 
 	public void render(GameContainer gc, Graphics g) throws SlickException {
 		if (isDying == false) {
+			for (Bullet bullet : bullets) {
+				bullet.render(gc, g);
+			}
 			for (Zombies zombie : zombies) {
 				zombie.render(gc, g);
 			}
@@ -77,6 +85,26 @@ public class KuZombies extends BasicGame {
 
 	public void update(GameContainer gc, int delta) throws SlickException {
 		if (isGameOver == false) {
+			
+			Iterator<Bullet> i = bullets.iterator();
+			while (i.hasNext()) {
+				Bullet b = i.next();
+				if (b.isAktiv()) {
+					b.update(delta);
+				} else {
+					i.remove();
+				}
+			}
+			
+
+			System.out.println(bullets.size());
+			if(bullets.size()<1) {
+			if (gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON)) {
+				bullets.add(new Bullet(new Vector2f(ku.getX() + 25,
+						ku.getY() + 38), new Vector2f((Mouse.getX() - ku.getX()),
+						(Mouse.getY() - ku.getY()))));
+			}
+			}
 			for (Zombies zombie : zombies) {
 				zombie.update(delta);
 				if (ku.isAttacked(zombie)) {
