@@ -85,8 +85,8 @@ public class Ku {
 	}
 
 	public boolean isAttacked(Zombies z) {
-		return (this.x < z.getX() + 40 && this.x > z.getX() - 40
-				&& this.y < z.getY() + 40 && this.y > z.getY() - 40);
+		return (this.x < z.getX() + 40 && this.x > z.getX()
+				&& this.y < z.getY() + 40 && this.y > z.getY());
 	}
 
 	public void dead() {

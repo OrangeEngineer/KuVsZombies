@@ -1,5 +1,6 @@
 package kuzombies;
 
+import java.io.ObjectInputStream.GetField;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
@@ -14,16 +15,18 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.geom.Vector2f;
+import org.w3c.dom.Entity;
 
 public class KuZombies extends BasicGame {
 	private Zombies[] zombies;
-	private LinkedList<Bullet> bullets;
+	private LinkedList<Entity> entities;
 	private Ku ku;
-	private float x;
+	private float ZombiePositionX;
 	private boolean isGameOver = false;
 	private boolean isDying = false;
-
+	private int default_bullet_delay = 800;
+	private int time = 0;
+	
 	public KuZombies(String title) {
 		super(title);
 	}
@@ -38,7 +41,7 @@ public class KuZombies extends BasicGame {
 	}
 
 	public void init(GameContainer gc) throws SlickException {
-		bullets = new LinkedList<Bullet>();
+		entities = new LinkedList<Entity>();
 		initZombies();
 		ku = new Ku(400, 500);
 	}
@@ -46,15 +49,19 @@ public class KuZombies extends BasicGame {
 	public void initZombies() throws SlickException {
 		zombies = new Zombies[4];
 		for (int i = 0; i < 4; i++) {
-			randomX();
-			zombies[i] = new Zombies(x, -100);
+			randomZombieX();
+			zombies[i] = new Zombies(ZombiePositionX, -100);
 		}
+	}
+	public interface Entity {
+		  void render(Graphics g);
+		  void update(int delta);
 	}
 
 	public void render(GameContainer gc, Graphics g) throws SlickException {
 		if (isDying == false) {
-			for (Bullet bullet : bullets) {
-				bullet.render(gc, g);
+			for (Entity entity : entities) {
+			      entity.render(g);
 			}
 			for (Zombies zombie : zombies) {
 				zombie.render(gc, g);
@@ -84,26 +91,18 @@ public class KuZombies extends BasicGame {
 	}
 
 	public void update(GameContainer gc, int delta) throws SlickException {
+		Input input = gc.getInput();
 		if (isGameOver == false) {
-			
-			Iterator<Bullet> i = bullets.iterator();
-			while (i.hasNext()) {
-				Bullet b = i.next();
-				if (b.isAktiv()) {
-					b.update(delta);
-				} else {
-					i.remove();
-				}
+			float positionMouseX = input.getMouseX();
+			float positionMouseY = input.getMouseY();
+			time -= delta;
+			if (gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON) && time<=0/*&& gameTime.getTimeMS() - shootTime > shootDelayInMilliseconds*/) {
+				//shootTime = gameTime.getTimeMS();
+				entities.add(new DirectionalBullet(ku.getX()+30,ku.getY()+30,10,positionMouseX,positionMouseY));
+				time = default_bullet_delay;
 			}
-			
-
-			System.out.println(bullets.size());
-			if(bullets.size()<1) {
-			if (gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON)) {
-				bullets.add(new Bullet(new Vector2f(ku.getX() + 25,
-						ku.getY() + 38), new Vector2f((Mouse.getX() - ku.getX()),
-						(Mouse.getY() - ku.getY()))));
-			}
+			for (Entity entity : entities) {
+			      entity.update(delta);
 			}
 			for (Zombies zombie : zombies) {
 				zombie.update(delta);
@@ -111,7 +110,6 @@ public class KuZombies extends BasicGame {
 					isGameOver = true;
 				}
 			}
-			Input input = gc.getInput();
 			updateKuMovement(input, delta);
 		} else if (isDying == false) {
 			ku.dead();
@@ -120,9 +118,9 @@ public class KuZombies extends BasicGame {
 		}
 	}
 
-	public void randomX() {
+	public void randomZombieX() {
 		Random random = new Random();
-		x = 100 + random.nextInt(400);
+		ZombiePositionX = 100 + random.nextInt(400);
 	}
 
 }
