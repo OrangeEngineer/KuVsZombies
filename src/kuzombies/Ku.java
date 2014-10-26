@@ -9,11 +9,12 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Animation;
+import org.newdawn.slick.geom.Shape;
+import org.newdawn.slick.geom.Circle;
 
 public class Ku {
-	private Animation dead;
 	private Image ku;
-	private Image dying;
+	private Shape KU;
 	private float x;
 	private float y;
 	public float getX() {
@@ -24,33 +25,18 @@ public class Ku {
 		return this.y;
 	}
 
-	public Animation getAnimation(Image i, int spritesX, int spritesY,
-			int spriteWidth, int spriteHeight, int frames, int duration) {
-		Animation a = new Animation(false);
-
-		int c = 0;
-		for (int y = 0; y < spritesY; y++) {
-			for (int x = 0; x < spritesX; x++) {
-				if (c < frames)
-					a.addFrame(i.getSubImage(x * spriteWidth, y * spriteHeight,
-							spriteWidth, spriteHeight), duration);
-				c++;
-			}
-		}
-
-		return a;
-	}
 
 	public Ku(float x, float y) throws SlickException {
 		ku = new Image("res/Player.png");
-		dying = new Image("res/dying.png");
+		KU = new Circle(this.x+80,this.y+80, 20);
 		this.x = x;
 		this.y = y;
-		dead = getAnimation(dying, 2, 1, 128, 128, 2, 3);
 	}
 
 	public void draw() throws SlickException {
 		ku.draw(this.x, this.y);
+		KU.setCenterX(this.x);
+		KU.setCenterY(this.y);
 	}
 
 	public void moveLeft() {
@@ -83,17 +69,9 @@ public class Ku {
 				positionMouseX - this.x));
 		ku.setRotation((float) MouseAngle + 90);
 	}
-
-	public boolean isAttacked(Zombies z) {
-		return (this.x < z.getX() + 40 && this.x > z.getX()
-				&& this.y < z.getY() + 40 && this.y > z.getY());
+	
+	public Shape getShape() {
+		return KU;
 	}
 
-	public void dead() {
-		dead.draw(this.x, this.y);
-	}
-
-	public void update(int delta) throws SlickException {
-		dead.update(delta);
-	}
 }

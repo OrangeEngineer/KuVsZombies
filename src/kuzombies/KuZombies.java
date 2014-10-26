@@ -19,6 +19,8 @@ public class KuZombies extends BasicGame {
 	private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	private ArrayList<DyingZombies> dyingzombies = new ArrayList<DyingZombies>();
 	private Ku ku;
+	public static float KUhealth = 100;
+	public static float KUKill = 0;
 	private float ZombiePositionX;
 	private boolean isDying = false;
 	private int default_bullet_delay = 100;
@@ -27,8 +29,15 @@ public class KuZombies extends BasicGame {
 	private int timeZombie = 0;
 	private int default_dying_delay = 1000;
 	private int timeDyingZombie = 0;
+	private int default_hitt_delay = 900;
+	private int timeHitZombie = 0;
 	private int Walker = 0;
 	private Image BackGround;
+	private Image HealthFace1;
+	private Image HealthFace2;
+	private Image HealthFace3;
+	private Image HealthFace4;
+	private Sound Pain;
 	private Sound BulletSound;
 	private Sound ZombieDeadSound;
 	private Sound ZombieAppearSound;
@@ -42,14 +51,42 @@ public class KuZombies extends BasicGame {
 		try {
 		KuZombies game = new KuZombies("KU vs Zombie");
 		AppGameContainer appgc = new AppGameContainer(game);
-		appgc.setDisplayMode(1024, 600, false);
+		appgc.setDisplayMode(1024, 720, false);
 		appgc.setTargetFrameRate(60);
 		appgc.start();
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
 	}
+	
+	public void init(GameContainer gc) throws SlickException {
+		ku = new Ku(400, 500);
+		SoundEffect();
+	}
 
+	private void SoundEffect() throws SlickException {
+		Pain = new Sound("res/Pain.wav");
+		BulletSound = new Sound("res/GUN_FIRE.wav");
+		ZombieDeadSound = new Sound("res/ZombieWalk.wav");
+		ZombieAppearSound = new Sound("res/ZombieAppear.wav");
+	}
+
+	private void Face(float KUHealth) throws SlickException {
+			HealthFace1 = new Image("res/Health1.png");
+			HealthFace2 = new Image("res/Health2.png");
+			HealthFace3 = new Image("res/Health3.png");
+			HealthFace4 = new Image("res/Health4.png");
+			if(KUHealth>=75) {
+				HealthFace1.draw(20, 70);
+			} else if(KUHealth>=50){
+				HealthFace2.draw(20, 70);
+			} else if(KUHealth>=25){
+				HealthFace3.draw(20, 70);
+			} else {
+				HealthFace4.draw(20, 70);
+			}
+	}
+	
 	public void addZombies(GameContainer gc, int delta) throws SlickException {
 			timeZombie -= delta;
 			if (zombies.size() == 0	&& timeZombie <= 0) {
@@ -78,6 +115,9 @@ public class KuZombies extends BasicGame {
 	public void render(GameContainer gc, Graphics g) throws SlickException {
 		BackGround = new Image("res/horrorBG.png");
 		BackGround.draw();
+		g.drawString("HP : " + (int) KuZombies.KUhealth, 20, 150);
+		g.drawString("Kill : " + (int) KuZombies.KUKill, 20, 170);
+		Face(KUhealth);
 		if (isDying == false) {
 			for (Bullet bullet : bullets) {
 			      bullet.render(g);
@@ -90,19 +130,8 @@ public class KuZombies extends BasicGame {
 			}
 			ku.draw();
 		} else {
-			ku.dead();
+			
 		}
-	}
-	
-	public void init(GameContainer gc) throws SlickException {
-		ku = new Ku(400, 500);
-		SoundEffect();
-	}
-
-	private void SoundEffect() throws SlickException {
-		BulletSound = new Sound("res/GUN_FIRE.wav");
-		ZombieDeadSound = new Sound("res/ZombieWalk.wav");
-		ZombieAppearSound = new Sound("res/ZombieAppear.wav");
 	}
 	
 	void updateKuMovement(Input input, int Delta) {
@@ -129,9 +158,9 @@ public class KuZombies extends BasicGame {
 		addBullet(gc, delta);
 		updateKuMovement(input, delta);
 		try {
-			updateZombie(gc, delta);
+			updateZombie(delta);
 			updateBullet(delta);
-			updateDyingZombie(gc,delta);
+			//updateDyingZombie(gc,delta);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -140,14 +169,25 @@ public class KuZombies extends BasicGame {
 	protected void checkBulletHitZombie(int i,int delta) throws SlickException{
 		for (int j = 0; j < bullets.size(); j++) {
 			if(CollisionChecker.isBulletHitZombie(zombies.get(i).getShape(),bullets.get(j).getShape())) {
-				dyingzombies.add(new DyingZombies(zombies.get(i).getX(),zombies.get(i).getY()));
+				//dyingzombies.add(new DyingZombies(zombies.get(i).getX(),zombies.get(i).getY()));
 				zombies.remove(i);
 				bullets.remove(j);
+				KUKill++;
 				ZombieDeadSound.play();
 			}
 		}
 	}
-	private void updateDyingZombie(GameContainer container, int delta) throws SlickException{
+	
+	private void checkKUHitZombie(int i,int delta) {
+		timeHitZombie -=delta;
+			if(CollisionChecker.isKUHitZombie(zombies.get(i).getShape(),ku.getShape()) && timeHitZombie<=0) {
+				Pain.play();
+				KUhealth -= 5;
+				timeHitZombie = default_hitt_delay;
+			}
+	}
+	
+	/*private void updateDyingZombie(GameContainer container, int delta) throws SlickException{
 		for (int i = 0; i < dyingzombies.size(); i++) {
 		do {
 			dyingzombies.get(i).update(delta);
@@ -157,13 +197,16 @@ public class KuZombies extends BasicGame {
 		
 		}
 		timeDyingZombie = default_dying_delay;
-	}
+	}*/
 	
-	private void updateZombie(GameContainer container, int delta) throws SlickException{
+	private void updateZombie(int delta) throws SlickException{
 		for (int i = 0; i < zombies.size(); i++) {
-				zombies.get(i).update(delta);
-				
+			zombies.get(i).update(delta);
 			checkBulletHitZombie(i,delta);
+			checkKUHitZombie(i,delta);
+			if(zombies.get(i).getY()>=650) {
+				zombies.remove(i);
+			}
 		}
 	}
 	

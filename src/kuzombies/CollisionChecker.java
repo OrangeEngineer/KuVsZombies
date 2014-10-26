@@ -11,4 +11,11 @@ public class CollisionChecker {
 			return false;
 		}
 	}
+	public static boolean isKUHitZombie(Shape zombie,Shape KU) {
+		if(zombie.intersects(KU)){
+			return true;
+		} else{
+			return false;
+		}
+	}
 }
