@@ -9,6 +9,8 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Shape;
+import org.newdawn.slick.geom.Circle;
 
 public class Zombies {
 	private Animation animation_Zombie;
@@ -16,6 +18,7 @@ public class Zombies {
 	private float x;
 	private float y;
 	private float angle;
+	private Shape ZombieShape;
 	public float getX() {
 		return this.x;
 	}
@@ -47,6 +50,7 @@ public class Zombies {
 		randomAngle();
 		zombie = new Image("res/animation.png");
 		animation_Zombie = getAnimation(zombie, 9, 3, 128, 128, 30, 100);
+		ZombieShape = new Circle(this.x+64, this.y+64, 64);
 
 	}
 
@@ -56,8 +60,8 @@ public class Zombies {
 	}
 
 	public void update(GameContainer container,int delta){
-		//if(collision(bullet.getX(), bulletY))
 		this.y += 1;
+		updateShape();
 		if (this.x > 20 && this.x < 700) {
 			this.x += (0.3) * ((float) Math.cos((angle*2*Math.PI)/360));
 		} else {
@@ -65,6 +69,10 @@ public class Zombies {
 			this.x += ((float) Math.cos((angle*2*Math.PI)/360));
 		}
 		animation_Zombie.update(delta);
+	}
+	private void updateShape() {
+		ZombieShape.setCenterX(this.x+10);
+		ZombieShape.setCenterY(this.y+10);
 	}
 
 	public boolean collision(float bulletX, float bulletY) {
@@ -74,7 +82,9 @@ public class Zombies {
 		}
 		return false;
 	}
-
+	public Shape getShape() {
+		return ZombieShape;
+	}
 	public void randomAngle() {
 		Random random = new Random();
 		angle = 30 + random.nextInt(120);

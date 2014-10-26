@@ -19,16 +19,16 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.geom.Shape;
 
 public class KuZombies extends BasicGame {
-	private Zombies[] zombiess;
 	private LinkedList<Entity> entities;
 	private ArrayList<Zombies> zombies = new ArrayList<Zombies>();
+	private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	private Ku ku;
 	private float ZombiePositionX;
 	private boolean isGameOver = false;
 	private boolean isDying = false;
-	private int default_bullet_delay = 200;
+	private int default_bullet_delay = 100;
 	private int timeBullet = 0;
-	private int default_zombie_delay = 1000;
+	private int default_zombie_delay = 400;
 	private int timeZombie = 0;
 	private int Walker = 0;
 	
@@ -52,37 +52,46 @@ public class KuZombies extends BasicGame {
 	}
 
 	public void addZombies(GameContainer gc, int delta) throws SlickException {
-		
-			for (int i = 0; i < 4; i++) {
 			timeZombie -= delta;
-			if (gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON)&& timeZombie<=0) {
-			randomZombieX();
-			if(Walker<=5) {
-			zombies.add(new Zombies(ZombiePositionX,-100));
-			} else if(Walker<=10) {
-				zombies.add(new Zombies(ZombiePositionX,-100));
+			if (gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON)
+					&& timeZombie <= 0) {
 				randomZombieX();
-				zombies.add(new Zombies(ZombiePositionX,-100));
-				this.Walker++;
-			} else {
-				randomZombieX();
-				zombies.add(new Zombies(ZombiePositionX,-100));
-				randomZombieX();
-				zombies.add(new Zombies(ZombiePositionX,-100));
-				randomZombieX();
-				zombies.add(new Zombies(ZombiePositionX,-100));
-				this.Walker += 3;
+				if (Walker <= 5) {
+					zombies.add(new Zombies(ZombiePositionX, -100));
+					Walker += 2;
+				} else if (Walker  <= 10) {
+					zombies.add(new Zombies(ZombiePositionX, -100));
+					randomZombieX();
+					zombies.add(new Zombies(ZombiePositionX, -100));
+					Walker += 3;
+				} else {
+					randomZombieX();
+					zombies.add(new Zombies(ZombiePositionX, -100));
+					randomZombieX();
+					zombies.add(new Zombies(ZombiePositionX, -100));
+					randomZombieX();
+					zombies.add(new Zombies(ZombiePositionX, -100));
+					Walker += 4;
+				}
+				timeZombie = default_zombie_delay;
 			}
-			this.Walker++;
-			timeZombie = default_zombie_delay;
-			}
-			
+	}
+	
+	public void addBullet(GameContainer gc, int delta) throws SlickException {
+		Input input = gc.getInput();
+		float positionMouseX = input.getMouseX();
+		float positionMouseY = input.getMouseY();
+		timeBullet -= delta;
+		if (gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON) && timeBullet<=0) {
+				bullets.add(new DirectionalBullet(ku.getX()+30,ku.getY()+10,10,positionMouseX,positionMouseY));
+				timeBullet = default_bullet_delay;
 		}
 	}
+	
 	public void render(GameContainer gc, Graphics g) throws SlickException {
 		if (isDying == false) {
-			for (Entity entity : entities) {
-			      entity.render(g);
+			for (Bullet bullet : bullets) {
+			      bullet.render(g);
 			}
 			for (Zombies zombie : zombies) {
 				zombie.render(gc, g);
@@ -113,35 +122,39 @@ public class KuZombies extends BasicGame {
 
 	public void update(GameContainer gc, int delta) throws SlickException {
 		Input input = gc.getInput();
-		if (isGameOver == false) {
-			float positionMouseX = input.getMouseX();
-			float positionMouseY = input.getMouseY();
-			timeBullet -= delta;
-			if (gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON) && timeBullet<=0) {
-				entities.add(new DirectionalBullet(ku.getX()+30,ku.getY()+10,10,positionMouseX,positionMouseY));
-				timeBullet = default_bullet_delay;
-			}
-			for (Entity entity : entities) {
-			      entity.update(delta);
-			}
-			addZombies(gc, delta);
-			updateKuMovement(input, delta);
-			try {
-				updateZombie(gc, delta);
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-		} else if (isDying == false) {
-			ku.dead();
-			ku.update(delta);
-			isDying = true;
+		addZombies(gc, delta);
+		addBullet(gc, delta);
+		updateKuMovement(input, delta);
+		try {
+			updateZombie(gc, delta);
+			updateBullet(delta);
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 	}
+
+	protected void checkBulletHitZombie(int i) {
+		for (int j = 0; j < bullets.size(); j++) {
+			if(CollisionChecker.isBulletHitZombie(zombies.get(i).getShape(),bullets.get(j).getShape())) {
+				zombies.remove(i);
+				bullets.remove(j);
+			}
+		}
+	}
+	
 	private void updateZombie(GameContainer container, int delta) {
-		for (int i = 0; i < Walker; i++) {
+		for (int i = 0; i < zombies.size(); i++) {
 			zombies.get(i).update(container,delta);
+			checkBulletHitZombie(i);
 		}
 	}
+	
+	private void updateBullet(int delta) {
+		for (int j = 0; j < bullets.size(); j++) {
+			bullets.get(j).update(delta);
+		}
+	}
+	
 	public void randomZombieX() {
 		Random random = new Random();
 		ZombiePositionX = 100 + random.nextInt(400);

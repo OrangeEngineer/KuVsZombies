@@ -7,8 +7,9 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.geom.Shape;
+import org.newdawn.slick.geom.Rectangle;
 
 public class Bullet implements Entity {
 
@@ -16,10 +17,13 @@ public class Bullet implements Entity {
 	protected float x;
 	protected float y;
 	protected Image bullet;
+	protected Shape shapeBullet;
 	
 	public Bullet(float x, float y) throws SlickException {
 		bullet = new Image("res/bullet.png");
 		this.setXY(x, y);
+		shapeBullet = new Rectangle(x, y, 3,3);
+		
 	}
 
 	@Override
@@ -38,6 +42,10 @@ public class Bullet implements Entity {
 
 	public float getY() {
 		return y;
+	}
+	
+	public Shape getShape() {
+		return shapeBullet;
 	}
 
 	protected void setXY(float x, float y) {
