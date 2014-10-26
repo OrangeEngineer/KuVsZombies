@@ -13,15 +13,14 @@ import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Circle;
 
 public class Zombies implements Entity {
-	private Animation animation_Zombie;
-	
-	private Image zombie;
-	
+	protected Animation animation_Zombie;
+	protected Image zombie;
 	protected float x;
 	protected float y;
-	private float velocityY;
-	private float angle;
-	private Shape ZombieShape;
+	protected float velocityY;
+	protected float angle;
+	protected Shape ZombieShape;
+
 	public float getX() {
 		return this.x;
 	}
@@ -53,7 +52,7 @@ public class Zombies implements Entity {
 		randomAngle();
 		zombie = new Image("res/animation.png");
 		animation_Zombie = getAnimation(zombie, 9, 3, 128, 128, 30, 100);
-		ZombieShape = new Circle(this.x+64, this.y+64, 64);
+		ZombieShape = new Circle(this.x + 64, this.y + 64, 64);
 
 	}
 
@@ -62,38 +61,41 @@ public class Zombies implements Entity {
 
 	}
 
-	public void update(int delta){
+	public void update(int delta) {
 		randomZombievVelocityY();
-		this.y += velocityY/10;
+		this.y += velocityY / 10;
 		updateShape();
 		if (this.x > 20 && this.x < 700) {
-			this.x += (0.3) * ((float) Math.cos((angle*2*Math.PI)/360));
+			this.x += (0.3) * ((float) Math.cos((angle * 2 * Math.PI) / 360));
 		} else {
 			angle = 90 - angle;
-			this.x += ((float) Math.cos((angle*2*Math.PI)/360));
+			this.x += ((float) Math.cos((angle * 2 * Math.PI) / 360));
 		}
 		animation_Zombie.update(delta);
 	}
-	private void updateShape() {
-		ZombieShape.setCenterX(this.x+10);
-		ZombieShape.setCenterY(this.y+10);
+
+	protected void updateShape() {
+		ZombieShape.setCenterX(this.x + 10);
+		ZombieShape.setCenterY(this.y + 10);
 	}
 
 	public boolean collision(float bulletX, float bulletY) {
-		if(bulletX < this.x + 40 && bulletX > this.x
-				&& bulletY < this.y + 40 && bulletY > this.y) {
+		if (bulletX < this.x + 40 && bulletX > this.x && bulletY < this.y + 40
+				&& bulletY > this.y) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	public Shape getShape() {
 		return ZombieShape;
 	}
+
 	public void randomAngle() {
 		Random random = new Random();
 		angle = 30 + random.nextInt(180);
 	}
+
 	public void randomZombievVelocityY() {
 		Random random = new Random();
 		velocityY = 1 + random.nextInt(20);

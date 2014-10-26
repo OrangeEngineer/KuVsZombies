@@ -27,7 +27,7 @@ public class KuZombies extends BasicGame {
 	private int default_zombie_delay = 400;
 	private int timeZombie = 0;
 	private int timeDyingZombie = 0;
-	private int default_hitt_delay = 900;
+	private int default_hitt_delay = 1000;
 	private int timeHitZombie = 0;
 	public static boolean Isgameover = false;
 	private int Walker = 0;
@@ -42,24 +42,24 @@ public class KuZombies extends BasicGame {
 	private Sound BulletSound;
 	private Sound ZombieDeadSound;
 	private Sound ZombieAppearSound;
-	
+
 	public KuZombies(String title) {
 		super(title);
-		
+
 	}
 
 	public static void main(String[] args) throws SlickException {
 		try {
-		KuZombies game = new KuZombies("KU vs Zombie");
-		AppGameContainer appgc = new AppGameContainer(game);
-		appgc.setDisplayMode(1024, 720, false);
-		appgc.setTargetFrameRate(60);
-		appgc.start();
+			KuZombies game = new KuZombies("KU vs Zombie");
+			AppGameContainer appgc = new AppGameContainer(game);
+			appgc.setDisplayMode(1024, 720, false);
+			appgc.setTargetFrameRate(60);
+			appgc.start();
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void init(GameContainer gc) throws SlickException {
 		ku = new Ku(400, 500);
 		SoundEffect();
@@ -74,52 +74,62 @@ public class KuZombies extends BasicGame {
 	}
 
 	private void Face(float KUHealth) throws SlickException {
-			HealthFace1 = new Image("res/Health1.png");
-			HealthFace2 = new Image("res/Health2.png");
-			HealthFace3 = new Image("res/Health3.png");
-			HealthFace4 = new Image("res/Health4.png");
-			if(KUHealth>=75) {
-				HealthFace1.draw(20, 70);
-			} else if(KUHealth>=50){
-				HealthFace2.draw(20, 70);
-			} else if(KUHealth>=25){
-				HealthFace3.draw(20, 70);
-			} else {
-				HealthFace4.draw(20, 70);
-			}
+		HealthFace1 = new Image("res/Health1.png");
+		HealthFace2 = new Image("res/Health2.png");
+		HealthFace3 = new Image("res/Health3.png");
+		HealthFace4 = new Image("res/Health4.png");
+		if (KUHealth >= 75) {
+			HealthFace1.draw(20, 70);
+		} else if (KUHealth >= 50) {
+			HealthFace2.draw(20, 70);
+		} else if (KUHealth >= 25) {
+			HealthFace3.draw(20, 70);
+		} else {
+			HealthFace4.draw(20, 70);
+		}
 	}
-	
+
 	public void addZombies(GameContainer gc, int delta) throws SlickException {
-			timeZombie -= delta;
-			if (zombies.size() == 0	&& timeZombie <= 0) {
-				for (int i = 0; i < this.Walker; i++) {
+		timeZombie -= delta;
+		if (zombies.size() == 0 && timeZombie <= 0) {
+			for (int i = 0; i < this.Walker; i++) {
+				ZombieAppearSound.play();
+				randomZombieX();
+				zombies.add(new Zombies(ZombiePositionX, -100));
+			}
+			this.Walker ++;
+			if (Walker > 3) {
+				for (int j = 0; j < this.Walker-3; j++) {
 					ZombieAppearSound.play();
 					randomZombieX();
-					zombies.add(new Zombies(ZombiePositionX, -100));
+				zombies.add(new FastZombies(ZombiePositionX, -100));
 				}
-				this.Walker += 4;
-				timeZombie = default_zombie_delay;
 			}
+			timeZombie = default_zombie_delay;
+		}
 	}
-	
+
 	public void addBullet(GameContainer gc, int delta) throws SlickException {
 		Input input = gc.getInput();
 		float positionMouseX = input.getMouseX();
 		float positionMouseY = input.getMouseY();
 		timeBullet -= delta;
-		if (gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON) && timeBullet<=0) {
-				bullets.add(new DirectionalBullet(ku.getX()+30,ku.getY()+10,10,positionMouseX,positionMouseY));
-				BulletSound.play();
-				timeBullet = default_bullet_delay;
+		if (gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON)
+				&& timeBullet <= 0) {
+			bullets.add(new DirectionalBullet(ku.getX() + 30, ku.getY() + 10,
+					10, positionMouseX, positionMouseY));
+			BulletSound.play();
+			timeBullet = default_bullet_delay;
 		}
 	}
-	
+
 	public void render(GameContainer gc, Graphics g) throws SlickException {
 		BackGround = new Image("res/horrorBG.png");
 		BackGround.draw();
 		g.drawString("HP : " + (int) KuZombies.KUhealth, 20, 150);
 		g.drawString("Kill : " + (int) KuZombies.KUKill, 20, 170);
-		g.drawString("Zombies Pass : " + (int) ( KuZombies.ZombieThrough), 20, 190);
+		g.drawString("Zombies Pass : " + (int) (KuZombies.ZombieThrough), 20,
+				190);
 		Face(KUhealth);
 		for (Bullet bullet : bullets) {
 			bullet.render(g);
@@ -131,11 +141,11 @@ public class KuZombies extends BasicGame {
 			dyingzombie.render(g);
 		}
 		ku.draw();
-		if(Isgameover == true){
+		if (Isgameover == true) {
 			g.drawString("GAME OVER", 500, 360);
 		}
 	}
-	
+
 	void updateKuMovement(Input input, int Delta) {
 		if (input.isKeyDown(input.KEY_A)) {
 			ku.moveLeft();
@@ -155,25 +165,27 @@ public class KuZombies extends BasicGame {
 	}
 
 	public void update(GameContainer gc, int delta) throws SlickException {
-		if(Isgameover == false) {
-		Input input = gc.getInput();
-		addZombies(gc, delta);
-		addBullet(gc, delta);
-		updateKuMovement(input, delta);
-		try {
-			updateZombie(delta);
-			updateBullet(delta);
-			updateDyingZombie(gc,delta);
-		} catch (Exception e) {
-			// TODO: handle exception
+		if (Isgameover == false) {
+			Input input = gc.getInput();
+			addZombies(gc, delta);
+			addBullet(gc, delta);
+			updateKuMovement(input, delta);
+			try {
+				updateZombie(delta);
+				updateBullet(delta);
+				updateDyingZombie(gc, delta);
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
 		}
-		} 
 	}
 
-	protected void checkBulletHitZombie(int i,int delta) throws SlickException{
+	protected void checkBulletHitZombie(int i, int delta) throws SlickException {
 		for (int j = 0; j < bullets.size(); j++) {
-			if(CollisionChecker.isBulletHitZombie(zombies.get(i).getShape(),bullets.get(j).getShape())) {
-				dyingzombies.add(new DyingZombies(zombies.get(i).getX(),zombies.get(i).getY()));
+			if (CollisionChecker.isBulletHitZombie(zombies.get(i).getShape(),
+					bullets.get(j).getShape())) {
+				dyingzombies.add(new DyingZombies(zombies.get(i).getX(),
+						zombies.get(i).getY()));
 				zombies.remove(i);
 				bullets.remove(j);
 				KUKill++;
@@ -181,53 +193,59 @@ public class KuZombies extends BasicGame {
 			}
 		}
 	}
-	
-	private void checkKUHitZombie(int i,int delta) {
-		timeHitZombie -=delta;
-			if(CollisionChecker.isKUHitZombie(zombies.get(i).getShape(),ku.getShape()) && timeHitZombie<=0) {
-				Pain.play();
-				KUhealth --;
-				if(KUhealth <= 0) {
-					GameOver.play();
-					Isgameover = true;
-				}
-				timeHitZombie = default_hitt_delay;
+
+	private void checkKUHitZombie(int i, int delta) {
+		timeHitZombie -= delta;
+		if (CollisionChecker.isKUHitZombie(zombies.get(i).getShape(),
+				ku.getShape())
+				&& timeHitZombie <= 0) {
+			Pain.play();
+			KUhealth--;
+			if (KUhealth <= 0) {
+				GameOver.play();
+				Isgameover = true;
 			}
+			timeHitZombie = default_hitt_delay;
+		}
 	}
-	
-	private void updateDyingZombie(GameContainer container, int delta) throws SlickException{
-		
+
+	private void updateDyingZombie(GameContainer container, int delta)
+			throws SlickException {
+
 		for (int i = 0; i < dyingzombies.size(); i++) {
 			timeDyingZombie += delta;
 			dyingzombies.get(i).update(delta);
-		if(timeDyingZombie >= 400) {
-		dyingzombies.remove(i);
-		timeDyingZombie = 0;
-		}
+			if (timeDyingZombie >= 400) {
+				dyingzombies.remove(i);
+				timeDyingZombie = 0;
+			}
 		}
 	}
-	
-	private void updateZombie(int delta) throws SlickException{
+
+	private void updateZombie(int delta) throws SlickException {
 		for (int i = 0; i < zombies.size(); i++) {
 			zombies.get(i).update(delta);
-			checkBulletHitZombie(i,delta);
-			checkKUHitZombie(i,delta);
-			if(zombies.get(i).getY()>=650) {
+			checkBulletHitZombie(i, delta);
+			checkKUHitZombie(i, delta);
+			if (zombies.get(i).getY() >= 650) {
 				zombies.remove(i);
 				ZombieThrough++;
-				if(ZombieThrough >= 20){
+				if (ZombieThrough >= 20) {
 					Isgameover = true;
 				}
 			}
 		}
 	}
-	
+
 	private void updateBullet(int delta) {
 		for (int j = 0; j < bullets.size(); j++) {
 			bullets.get(j).update(delta);
+			if(bullets.get(j).getY()<=0) {
+				bullets.remove(j);
+			}
 		}
 	}
-	
+
 	public void randomZombieX() {
 		Random random = new Random();
 		ZombiePositionX = 100 + random.nextInt(600);

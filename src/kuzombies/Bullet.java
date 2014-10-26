@@ -18,15 +18,15 @@ public class Bullet implements Entity {
 	private static final float BULLET_SIZE = 9;
 	protected float x;
 	protected float y;
+	protected float fx;
+	protected float fy;
 	protected Image bullet;
 	protected Shape shapeBullet;
-	
-	
-	
+
 	public Bullet(float x, float y) throws SlickException {
 		bullet = new Image("res/bullet.png");
 		this.setXY(x, y);
-		shapeBullet = new Rectangle(x, y, 3,3);
+		shapeBullet = new Rectangle(x, y, 3, 3);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class Bullet implements Entity {
 	public float getY() {
 		return y;
 	}
-	
+
 	public Shape getShape() {
 		return shapeBullet;
 	}

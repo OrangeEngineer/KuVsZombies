@@ -17,6 +17,7 @@ public class Ku {
 	private Shape KU;
 	private float x;
 	private float y;
+
 	public float getX() {
 		return this.x;
 	}
@@ -25,10 +26,9 @@ public class Ku {
 		return this.y;
 	}
 
-
 	public Ku(float x, float y) throws SlickException {
 		ku = new Image("res/Player.png");
-		KU = new Circle(this.x+80,this.y+80, 20);
+		KU = new Circle(this.x + 80, this.y + 80, 20);
 		this.x = x;
 		this.y = y;
 	}
@@ -69,7 +69,7 @@ public class Ku {
 				positionMouseX - this.x));
 		ku.setRotation((float) MouseAngle + 90);
 	}
-	
+
 	public Shape getShape() {
 		return KU;
 	}
