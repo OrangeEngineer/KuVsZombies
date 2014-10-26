@@ -52,13 +52,13 @@ public class Ku {
 	}
 
 	public void moveUp() {
-		if (this.y > 300) {
+		if (this.y > 400) {
 			this.y -= 4;
 		}
 	}
 
 	public void moveDown() {
-		if (this.y < 500) {
+		if (this.y < 600) {
 			this.y += 4;
 		}
 

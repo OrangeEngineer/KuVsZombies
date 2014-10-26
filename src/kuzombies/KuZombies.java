@@ -22,21 +22,22 @@ public class KuZombies extends BasicGame {
 	public static float KUhealth = 100;
 	public static float KUKill = 0;
 	private float ZombiePositionX;
-	private boolean isDying = false;
 	private int default_bullet_delay = 100;
 	private int timeBullet = 0;
 	private int default_zombie_delay = 400;
 	private int timeZombie = 0;
-	private int default_dying_delay = 1000;
 	private int timeDyingZombie = 0;
 	private int default_hitt_delay = 900;
 	private int timeHitZombie = 0;
+	public static boolean Isgameover = false;
 	private int Walker = 0;
+	private static int ZombieThrough = 0;
 	private Image BackGround;
 	private Image HealthFace1;
 	private Image HealthFace2;
 	private Image HealthFace3;
 	private Image HealthFace4;
+	private Sound GameOver;
 	private Sound Pain;
 	private Sound BulletSound;
 	private Sound ZombieDeadSound;
@@ -65,6 +66,7 @@ public class KuZombies extends BasicGame {
 	}
 
 	private void SoundEffect() throws SlickException {
+		GameOver = new Sound("res/Torture.wav");
 		Pain = new Sound("res/Pain.wav");
 		BulletSound = new Sound("res/GUN_FIRE.wav");
 		ZombieDeadSound = new Sound("res/ZombieWalk.wav");
@@ -117,20 +119,20 @@ public class KuZombies extends BasicGame {
 		BackGround.draw();
 		g.drawString("HP : " + (int) KuZombies.KUhealth, 20, 150);
 		g.drawString("Kill : " + (int) KuZombies.KUKill, 20, 170);
+		g.drawString("Zombies Pass : " + (int) ( KuZombies.ZombieThrough), 20, 190);
 		Face(KUhealth);
-		if (isDying == false) {
-			for (Bullet bullet : bullets) {
-			      bullet.render(g);
-			}
-			for (Zombies zombie : zombies) {
-				zombie.render(g);
-			}
-			for (DyingZombies dyingzombie : dyingzombies) {
-				dyingzombie.render(g);
-			}
-			ku.draw();
-		} else {
-			
+		for (Bullet bullet : bullets) {
+			bullet.render(g);
+		}
+		for (Zombies zombie : zombies) {
+			zombie.render(g);
+		}
+		for (DyingZombies dyingzombie : dyingzombies) {
+			dyingzombie.render(g);
+		}
+		ku.draw();
+		if(Isgameover == true){
+			g.drawString("GAME OVER", 500, 360);
 		}
 	}
 	
@@ -153,6 +155,7 @@ public class KuZombies extends BasicGame {
 	}
 
 	public void update(GameContainer gc, int delta) throws SlickException {
+		if(Isgameover == false) {
 		Input input = gc.getInput();
 		addZombies(gc, delta);
 		addBullet(gc, delta);
@@ -160,16 +163,17 @@ public class KuZombies extends BasicGame {
 		try {
 			updateZombie(delta);
 			updateBullet(delta);
-			//updateDyingZombie(gc,delta);
+			updateDyingZombie(gc,delta);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
+		} 
 	}
 
 	protected void checkBulletHitZombie(int i,int delta) throws SlickException{
 		for (int j = 0; j < bullets.size(); j++) {
 			if(CollisionChecker.isBulletHitZombie(zombies.get(i).getShape(),bullets.get(j).getShape())) {
-				//dyingzombies.add(new DyingZombies(zombies.get(i).getX(),zombies.get(i).getY()));
+				dyingzombies.add(new DyingZombies(zombies.get(i).getX(),zombies.get(i).getY()));
 				zombies.remove(i);
 				bullets.remove(j);
 				KUKill++;
@@ -182,22 +186,26 @@ public class KuZombies extends BasicGame {
 		timeHitZombie -=delta;
 			if(CollisionChecker.isKUHitZombie(zombies.get(i).getShape(),ku.getShape()) && timeHitZombie<=0) {
 				Pain.play();
-				KUhealth -= 5;
+				KUhealth --;
+				if(KUhealth <= 0) {
+					GameOver.play();
+					Isgameover = true;
+				}
 				timeHitZombie = default_hitt_delay;
 			}
 	}
 	
-	/*private void updateDyingZombie(GameContainer container, int delta) throws SlickException{
-		for (int i = 0; i < dyingzombies.size(); i++) {
-		do {
-			dyingzombies.get(i).update(delta);
-			timeDyingZombie -= delta;
-		} while (timeDyingZombie > 0);
-		dyingzombies.remove(i);
+	private void updateDyingZombie(GameContainer container, int delta) throws SlickException{
 		
+		for (int i = 0; i < dyingzombies.size(); i++) {
+			timeDyingZombie += delta;
+			dyingzombies.get(i).update(delta);
+		if(timeDyingZombie >= 400) {
+		dyingzombies.remove(i);
+		timeDyingZombie = 0;
 		}
-		timeDyingZombie = default_dying_delay;
-	}*/
+		}
+	}
 	
 	private void updateZombie(int delta) throws SlickException{
 		for (int i = 0; i < zombies.size(); i++) {
@@ -206,6 +214,10 @@ public class KuZombies extends BasicGame {
 			checkKUHitZombie(i,delta);
 			if(zombies.get(i).getY()>=650) {
 				zombies.remove(i);
+				ZombieThrough++;
+				if(ZombieThrough >= 20){
+					Isgameover = true;
+				}
 			}
 		}
 	}

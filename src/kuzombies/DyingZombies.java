@@ -34,8 +34,8 @@ public class DyingZombies  {
 	public DyingZombies(float x, float y) throws SlickException {
 		this.x = x;
 		this.y = y;
-		zombieKilled = new Image("res/ZombieKilled.png");
-		Killed = getAnimation(zombieKilled, 9, 2, 128, 128, 16, 100);
+		zombieKilled = new Image("res/ZombieKilled2.png");
+		Killed = getAnimation(zombieKilled, 9, 2, 132, 132, 17, 140);
 		
 	}
 	public void render(Graphics g) {
