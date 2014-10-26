@@ -22,9 +22,10 @@ public class KuZombies extends BasicGame {
 	public static float KUhealth = 100;
 	public static float KUKill = 0;
 	private float ZombiePositionX;
-	private int default_bullet_delay = 100;
+	private int default_bullet_delay = 200;
 	private int timeBullet = 0;
 	private int default_zombie_delay = 400;
+	private static int Magazine = 0;
 	private int timeZombie = 0;
 	private int timeDyingZombie = 0;
 	private int default_hitt_delay = 1000;
@@ -38,6 +39,7 @@ public class KuZombies extends BasicGame {
 	private Image HealthFace3;
 	private Image HealthFace4;
 	private Sound GameOver;
+	private Sound GunReload;
 	private Sound Pain;
 	private Sound BulletSound;
 	private Sound ZombieDeadSound;
@@ -67,6 +69,7 @@ public class KuZombies extends BasicGame {
 
 	private void SoundEffect() throws SlickException {
 		GameOver = new Sound("res/Torture.wav");
+		GunReload = new Sound("res/cocking.wav");
 		Pain = new Sound("res/Pain.wav");
 		BulletSound = new Sound("res/GUN_FIRE.wav");
 		ZombieDeadSound = new Sound("res/ZombieWalk.wav");
@@ -118,8 +121,15 @@ public class KuZombies extends BasicGame {
 				&& timeBullet <= 0) {
 			bullets.add(new DirectionalBullet(ku.getX() + 30, ku.getY() + 10,
 					10, positionMouseX, positionMouseY));
+			Magazine++;
 			BulletSound.play();
+			if(Magazine >= 25) {
+				timeBullet = 1600;
+				Magazine = 0;
+				GunReload.play();
+			} else {
 			timeBullet = default_bullet_delay;
+			}
 		}
 	}
 
