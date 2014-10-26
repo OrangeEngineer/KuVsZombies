@@ -6,8 +6,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Deque;
+
 import kuzombies.Entity;
-import org.lwjgl.input.Mouse;
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
@@ -16,10 +16,9 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Input;
-import org.newdawn.slick.geom.Shape;
+import org.newdawn.slick.Sound;
 
 public class KuZombies extends BasicGame {
-	private LinkedList<Entity> entities;
 	private ArrayList<Zombies> zombies = new ArrayList<Zombies>();
 	private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	private Ku ku;
@@ -31,10 +30,10 @@ public class KuZombies extends BasicGame {
 	private int default_zombie_delay = 400;
 	private int timeZombie = 0;
 	private int Walker = 0;
+	private Sound shoot;
 	
 	public KuZombies(String title) {
 		super(title);
-		entities = new LinkedList<>();
 	}
 
 	public static void main(String[] args) throws SlickException {
@@ -47,24 +46,17 @@ public class KuZombies extends BasicGame {
 	}
 
 	public void init(GameContainer gc) throws SlickException {
-		entities = new LinkedList<Entity>();
 		ku = new Ku(400, 500);
+		shoot = new Sound("res/shoot.wav");
 	}
 
 	public void addZombies(GameContainer gc, int delta) throws SlickException {
 			timeZombie -= delta;
 			if (gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON)
 					&& timeZombie <= 0) {
-				randomZombieX();
-				if (Walker <= 5) {
-					zombies.add(new Zombies(ZombiePositionX, -100));
-					Walker += 2;
-				} else if (Walker  <= 10) {
-					zombies.add(new Zombies(ZombiePositionX, -100));
+				
 					randomZombieX();
 					zombies.add(new Zombies(ZombiePositionX, -100));
-					Walker += 3;
-				} else {
 					randomZombieX();
 					zombies.add(new Zombies(ZombiePositionX, -100));
 					randomZombieX();
@@ -72,7 +64,6 @@ public class KuZombies extends BasicGame {
 					randomZombieX();
 					zombies.add(new Zombies(ZombiePositionX, -100));
 					Walker += 4;
-				}
 				timeZombie = default_zombie_delay;
 			}
 	}
@@ -92,6 +83,7 @@ public class KuZombies extends BasicGame {
 		if (isDying == false) {
 			for (Bullet bullet : bullets) {
 			      bullet.render(g);
+			      //shoot.play();
 			}
 			for (Zombies zombie : zombies) {
 				zombie.render(gc, g);
