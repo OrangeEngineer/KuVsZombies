@@ -3,18 +3,12 @@ package kuzombies;
 import java.util.ArrayList;
 import java.io.ObjectInputStream.GetField;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Random;
-import java.util.Deque;
-
-import kuzombies.Entity;
-import org.newdawn.slick.Animation;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.Sound;
 
@@ -23,17 +17,17 @@ public class KuZombies extends BasicGame {
 	private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	private Ku ku;
 	private float ZombiePositionX;
-	private boolean isGameOver = false;
 	private boolean isDying = false;
 	private int default_bullet_delay = 100;
 	private int timeBullet = 0;
 	private int default_zombie_delay = 400;
 	private int timeZombie = 0;
 	private int Walker = 0;
-	private Sound shoot;
+	private Sound sound;
 	
 	public KuZombies(String title) {
 		super(title);
+		
 	}
 
 	public static void main(String[] args) throws SlickException {
@@ -47,7 +41,7 @@ public class KuZombies extends BasicGame {
 
 	public void init(GameContainer gc) throws SlickException {
 		ku = new Ku(400, 500);
-		shoot = new Sound("res/shoot.wav");
+		sound = new Sound("res/shoot.wav");
 	}
 
 	public void addZombies(GameContainer gc, int delta) throws SlickException {
