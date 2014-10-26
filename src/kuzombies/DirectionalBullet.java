@@ -19,8 +19,8 @@ public class DirectionalBullet extends Bullet {
 	}
 
 	public void update(int delta) {
-		this.y -= 20 * Math.cos((this.dir * 2 * Math.PI) / 360);
-		this.x += 20 * Math.sin((this.dir * 2 * Math.PI) / 360);
+		this.y -= 30 * Math.cos((this.dir * 2 * Math.PI) / 360);
+		this.x += 30 * Math.sin((this.dir * 2 * Math.PI) / 360);
 		bullet.setRotation(this.dir);
 		shapeBullet.setCenterX(this.x);
 		shapeBullet.setCenterY(this.y);

@@ -60,7 +60,7 @@ public class Ku {
 	}
 
 	public void moveRight() {
-		if (this.x < 700) {
+		if (this.x < 1000) {
 			this.x += 4;
 		}
 	}

@@ -12,11 +12,14 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Circle;
 
-public class Zombies {
+public class Zombies implements Entity {
 	private Animation animation_Zombie;
+	
 	private Image zombie;
-	private float x;
-	private float y;
+	
+	protected float x;
+	protected float y;
+	private float velocityY;
 	private float angle;
 	private Shape ZombieShape;
 	public float getX() {
@@ -54,13 +57,14 @@ public class Zombies {
 
 	}
 
-	public void render(GameContainer gc, Graphics g) throws SlickException {
+	public void render(Graphics g) {
 		animation_Zombie.draw(this.x, this.y);
 
 	}
 
-	public void update(GameContainer container,int delta){
-		this.y += 1;
+	public void update(int delta){
+		randomZombievVelocityY();
+		this.y += velocityY/10;
 		updateShape();
 		if (this.x > 20 && this.x < 700) {
 			this.x += (0.3) * ((float) Math.cos((angle*2*Math.PI)/360));
@@ -82,12 +86,17 @@ public class Zombies {
 		}
 		return false;
 	}
+	
 	public Shape getShape() {
 		return ZombieShape;
 	}
 	public void randomAngle() {
 		Random random = new Random();
-		angle = 30 + random.nextInt(120);
+		angle = 30 + random.nextInt(180);
+	}
+	public void randomZombievVelocityY() {
+		Random random = new Random();
+		velocityY = 1 + random.nextInt(20);
 	}
 
 }
