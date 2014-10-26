@@ -9,22 +9,25 @@ public class DirectionalBullet extends Bullet {
 	private float velocity;
 	private double MouseAngle;
 
-	public DirectionalBullet(float x, float y, float velocity,float positionMouseX, float positionMouseY)
-			throws SlickException {
+	public DirectionalBullet(float x, float y, float velocity,
+			float positionMouseX, float positionMouseY) throws SlickException {
 		super(x, y);
-		MouseAngle = Math.toDegrees(Math.atan2(positionMouseY - this.y,positionMouseX - this.x));
+		MouseAngle = Math.toDegrees(Math.atan2(positionMouseY - this.y,
+				positionMouseX - this.x));
 		this.dir = (float) MouseAngle + 90;
 		this.velocity = velocity;
 	}
+
 	public void update(int delta) {
-		y -= this.velocity;
+		this.y -= 20 * Math.cos((this.dir * 2 * Math.PI) / 360);
+		this.x += 20 * Math.sin((this.dir * 2 * Math.PI) / 360);
 		bullet.setRotation(this.dir);
 	}
-	
-	public void bulletdirect() {	
-			x += this.velocity*(Math.sin(MouseAngle+90));
-			y -= this.velocity*(Math.cos(MouseAngle+90));		
+
+	public void bulletdirect() {
+
 	}
+
 	public float getVelocity() {
 		return velocity;
 	}
@@ -33,6 +36,5 @@ public class DirectionalBullet extends Bullet {
 		return dir;
 	}
 }
-
 
 

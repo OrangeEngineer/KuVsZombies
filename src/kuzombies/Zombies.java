@@ -2,6 +2,8 @@ package kuzombies;
 
 import java.util.Random;
 
+import kuzombies.Entity;
+
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -14,7 +16,6 @@ public class Zombies {
 	private float x;
 	private float y;
 	private float angle;
-
 	public float getX() {
 		return this.x;
 	}
@@ -54,16 +55,24 @@ public class Zombies {
 
 	}
 
-	public void update(int delta) throws SlickException {
+	public void update(GameContainer container,int delta){
+		//if(collision(bullet.getX(), bulletY))
 		this.y += 1;
-		zombie.setRotation(angle);
 		if (this.x > 20 && this.x < 700) {
-			this.x += (0.3) * ((float) Math.cos(angle));
+			this.x += (0.3) * ((float) Math.cos((angle*2*Math.PI)/360));
 		} else {
 			angle = 90 - angle;
-			this.x += ((float) Math.cos(angle));
+			this.x += ((float) Math.cos((angle*2*Math.PI)/360));
 		}
 		animation_Zombie.update(delta);
+	}
+
+	public boolean collision(float bulletX, float bulletY) {
+		if(bulletX < this.x + 40 && bulletX > this.x
+				&& bulletY < this.y + 40 && bulletY > this.y) {
+			return true;
+		}
+		return false;
 	}
 
 	public void randomAngle() {
