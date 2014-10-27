@@ -17,15 +17,18 @@ import org.newdawn.slick.Sound;
 public class KuZombies extends BasicGame {
 	private ArrayList<Zombies> zombies = new ArrayList<Zombies>();
 	private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+	private ArrayList<Magazines> magazines = new ArrayList<Magazines>();
 	private ArrayList<DyingZombies> dyingzombies = new ArrayList<DyingZombies>();
 	private Ku ku;
 	public static float KUhealth = 100;
 	public static float KUKill = 0;
 	private float ZombiePositionX;
-	private int default_bullet_delay = 200;
+	private int default_bullet_delay = 100;
 	private int timeBullet = 0;
 	private int default_zombie_delay = 400;
 	private static int Magazine = 0;
+	private int default_reload_delay = 1600;
+	private int reload = 0;
 	private int timeZombie = 0;
 	private int timeDyingZombie = 0;
 	private int default_hitt_delay = 1000;
@@ -91,7 +94,7 @@ public class KuZombies extends BasicGame {
 			HealthFace4.draw(20, 70);
 		}
 	}
-
+	
 	public void addZombies(GameContainer gc, int delta) throws SlickException {
 		timeZombie -= delta;
 		if (zombies.size() == 0 && timeZombie <= 0) {
@@ -100,7 +103,7 @@ public class KuZombies extends BasicGame {
 				randomZombieX();
 				zombies.add(new Zombies(ZombiePositionX, -100));
 			}
-			this.Walker ++;
+			this.Walker += 3;
 			if (Walker > 3) {
 				for (int j = 0; j < this.Walker-3; j++) {
 					ZombieAppearSound.play();
@@ -121,11 +124,11 @@ public class KuZombies extends BasicGame {
 				&& timeBullet <= 0) {
 			bullets.add(new DirectionalBullet(ku.getX() + 30, ku.getY() + 10,
 					10, positionMouseX, positionMouseY));
-			Magazine++;
+			Magazine--;
 			BulletSound.play();
-			if(Magazine >= 25) {
+			if(Magazine == 0) {
 				timeBullet = 1600;
-				Magazine = 0;
+				Magazine = 25;
 				GunReload.play();
 			} else {
 			timeBullet = default_bullet_delay;
@@ -141,6 +144,9 @@ public class KuZombies extends BasicGame {
 		g.drawString("Zombies Pass : " + (int) (KuZombies.ZombieThrough), 20,
 				190);
 		Face(KUhealth);
+		for (Magazines magazine : magazines) {
+			magazine.render(g);
+		}
 		for (Bullet bullet : bullets) {
 			bullet.render(g);
 		}
@@ -174,9 +180,23 @@ public class KuZombies extends BasicGame {
 		ku.Rotate(positionMouseX, positionMouseY);
 	}
 
+	public void addReload(GameContainer gc,int delta) throws SlickException {
+		Input input = gc.getInput();
+		reload -= delta;
+		if ( (input.isMouseButtonDown(input.MOUSE_MIDDLE_BUTTON)&& reload<=0)) {
+			FullMagazine(delta);
+			reload = default_reload_delay;
+		}
+	}
+	
 	public void update(GameContainer gc, int delta) throws SlickException {
 		if (Isgameover == false) {
 			Input input = gc.getInput();
+			if(Magazine <= 0){
+				FullMagazine(delta);
+				
+			}
+			addReload(gc,delta);
 			addZombies(gc, delta);
 			addBullet(gc, delta);
 			updateKuMovement(input, delta);
@@ -184,12 +204,14 @@ public class KuZombies extends BasicGame {
 				updateZombie(delta);
 				updateBullet(delta);
 				updateDyingZombie(gc, delta);
+				updateMagazine(delta);
+				FullMagazine(delta);
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
 		}
 	}
-
+	
 	protected void checkBulletHitZombie(int i, int delta) throws SlickException {
 		for (int j = 0; j < bullets.size(); j++) {
 			if (CollisionChecker.isBulletHitZombie(zombies.get(i).getShape(),
@@ -218,6 +240,15 @@ public class KuZombies extends BasicGame {
 			timeHitZombie = default_hitt_delay;
 		}
 	}
+	
+	public void FullMagazine(int delta) throws SlickException {
+		for (int numBullet = 0; numBullet < 25; numBullet++) {
+			magazines.add(new Magazines(30, 220 +(12* numBullet)));
+		}
+		Magazine = 25;
+		timeBullet = 1600;
+		GunReload.play();
+	}
 
 	private void updateDyingZombie(GameContainer container, int delta)
 			throws SlickException {
@@ -229,6 +260,16 @@ public class KuZombies extends BasicGame {
 				dyingzombies.remove(i);
 				timeDyingZombie = 0;
 			}
+		}
+	}
+	
+	private void updateMagazine(int delta) throws SlickException {
+		for (int i = 0; i < magazines.size(); i++) {
+			magazines.get(i).update();
+			if(Magazine > 0) {
+				magazines.remove(Magazine);
+				
+			} 
 		}
 	}
 
