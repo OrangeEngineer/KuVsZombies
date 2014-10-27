@@ -196,7 +196,7 @@ public class KuZombies extends BasicGame {
 				FullMagazine(delta);
 				
 			}
-			addReload(gc,delta);
+			//addReload(gc,delta);
 			addZombies(gc, delta);
 			addBullet(gc, delta);
 			updateKuMovement(input, delta);
