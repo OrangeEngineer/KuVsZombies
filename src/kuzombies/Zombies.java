@@ -20,6 +20,7 @@ public class Zombies implements Entity {
 	protected float velocityY;
 	protected float angle;
 	protected Shape ZombieShape;
+	protected float Health;
 
 	public float getX() {
 		return this.x;
@@ -49,6 +50,7 @@ public class Zombies implements Entity {
 	public Zombies(float x, float y) throws SlickException {
 		this.x = x;
 		this.y = y;
+		this.Health = 100;
 		randomAngle();
 		zombie = new Image("res/animation.png");
 		animation_Zombie = getAnimation(zombie, 9, 3, 128, 128, 30, 100);
@@ -95,7 +97,9 @@ public class Zombies implements Entity {
 		Random random = new Random();
 		angle = 30 + random.nextInt(180);
 	}
-
+	public void DecreaseZombieHealth() {
+		this.Health -= 100;
+	}
 	public void randomZombievVelocityY() {
 		Random random = new Random();
 		velocityY = 1 + random.nextInt(20);

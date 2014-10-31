@@ -19,11 +19,12 @@ public class KuZombies extends BasicGame {
 	private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	private ArrayList<Magazines> magazines = new ArrayList<Magazines>();
 	private ArrayList<DyingZombies> dyingzombies = new ArrayList<DyingZombies>();
+	private static int[] ZombieHealth ;
 	private Ku ku;
 	public static float KUhealth = 100;
 	public static float KUKill = 0;
 	private float ZombiePositionX;
-	private int default_bullet_delay = 100;
+	private int default_bullet_delay = 200;
 	private int timeBullet = 0;
 	private int default_zombie_delay = 400;
 	private static int Magazine = 0;
@@ -111,6 +112,13 @@ public class KuZombies extends BasicGame {
 				zombies.add(new FastZombies(ZombiePositionX, -100));
 				}
 			}
+			if (Walker > 10) {
+				for (int j = 0; j < this.Walker-9; j++) {
+					ZombieAppearSound.play();
+					randomZombieX();
+				zombies.add(new DieHardZombies(ZombiePositionX, -100));
+				}
+			}
 			timeZombie = default_zombie_delay;
 		}
 	}
@@ -183,7 +191,8 @@ public class KuZombies extends BasicGame {
 	public void addReload(GameContainer gc,int delta) throws SlickException {
 		Input input = gc.getInput();
 		reload -= delta;
-		if ( (input.isMouseButtonDown(input.MOUSE_MIDDLE_BUTTON)&& reload<=0)) {
+		if ( (input.isMouseButtonDown(input.MOUSE_RIGHT_BUTTON)&& reload<=0)) {
+			//Magazine = ;
 			FullMagazine(delta);
 			reload = default_reload_delay;
 		}
@@ -196,11 +205,12 @@ public class KuZombies extends BasicGame {
 				FullMagazine(delta);
 				
 			}
-			//addReload(gc,delta);
+			
 			addZombies(gc, delta);
 			addBullet(gc, delta);
 			updateKuMovement(input, delta);
 			try {
+				addReload(gc,delta);
 				updateZombie(delta);
 				updateBullet(delta);
 				updateDyingZombie(gc, delta);
@@ -216,12 +226,16 @@ public class KuZombies extends BasicGame {
 		for (int j = 0; j < bullets.size(); j++) {
 			if (CollisionChecker.isBulletHitZombie(zombies.get(i).getShape(),
 					bullets.get(j).getShape())) {
-				dyingzombies.add(new DyingZombies(zombies.get(i).getX(),
-						zombies.get(i).getY()));
+				
+				zombies.get(i).DecreaseZombieHealth();
+				if(zombies.get(i).Health <= 0) {
+				dyingzombies.add(new DyingZombies(zombies.get(i).getX(),zombies.get(i).getY()));
 				zombies.remove(i);
-				bullets.remove(j);
 				KUKill++;
 				ZombieDeadSound.play();
+				}
+				bullets.remove(j);
+				
 			}
 		}
 	}
@@ -256,7 +270,7 @@ public class KuZombies extends BasicGame {
 		for (int i = 0; i < dyingzombies.size(); i++) {
 			timeDyingZombie += delta;
 			dyingzombies.get(i).update(delta);
-			if (timeDyingZombie >= 400) {
+			if (timeDyingZombie >= 600) {
 				dyingzombies.remove(i);
 				timeDyingZombie = 0;
 			}
@@ -283,6 +297,7 @@ public class KuZombies extends BasicGame {
 				ZombieThrough++;
 				if (ZombieThrough >= 20) {
 					Isgameover = true;
+					GameOver.play();
 				}
 			}
 		}
